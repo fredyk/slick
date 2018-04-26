@@ -88,7 +88,8 @@
                 vertical: false,
                 verticalSwiping: false,
                 waitForAnimate: true,
-                zIndex: 1000
+                zIndex: 1000,
+                centerScaling: 1
             };
 
             _.initials = {
@@ -318,6 +319,17 @@
                     animProps[_.animType] = 'translate3d(0px,' + targetLeft + 'px, 0px)';
                 }
                 _.$slideTrack.css(animProps);
+                var lowSlideAnimProps = {};
+                var centerSlideAnimProps = {};
+
+                var centerSlide = _.$slideTrack.children('.slick-center');
+                lowSlideAnimProps[_.animType] = 'translate(0px, ' + (_.$slideTrack.height() - centerSlide.height()) / 2.0 + 'px)';
+                centerSlideAnimProps[_.animType] = 'translate(0px, 0px)';
+
+                centerSlide.css(centerSlideAnimProps);
+                $(".slick-slide").not(".slick-center").each(function () {
+                  $(this).css(lowSlideAnimProps);
+                });
 
                 if (callback) {
                     setTimeout(function() {
@@ -376,9 +388,8 @@
 
         if (_.options.fade === false) {
             _.$slideTrack.css(transition);
-        } else {
-            _.$slides.eq(slide).css(transition);
         }
+        _.$slides.css(transition);
 
     };
 
@@ -704,14 +715,18 @@
             case 'previous':
                 slideOffset = indexOffset === 0 ? _.options.slidesToScroll : _.options.slidesToShow - indexOffset;
                 if (_.slideCount > _.options.slidesToShow) {
+                    _.currentDirection = event.data.message;
                     _.slideHandler(_.currentSlide - slideOffset, false, dontAnimate);
+                    _.lastDirection = event.data.message;
                 }
                 break;
 
             case 'next':
                 slideOffset = indexOffset === 0 ? _.options.slidesToScroll : indexOffset;
                 if (_.slideCount > _.options.slidesToShow) {
+                    _.currentDirection = event.data.message;
                     _.slideHandler(_.currentSlide + slideOffset, false, dontAnimate);
+                    _.lastDirection = event.data.message;
                 }
                 break;
 
@@ -1187,7 +1202,12 @@
                     targetLeft = targetSlide[0] ? targetSlide[0].offsetLeft * -1 : 0;
                 }
 
-                targetLeft += (_.$list.width() - targetSlide.outerWidth()) / 2;
+              var targetSlideOuterWidth = targetSlide.outerWidth();
+
+              targetLeft += (_.options.centerScaling * targetSlideOuterWidth - targetSlideOuterWidth)
+                * ((_.currentDirection === "previous")?0:1 )
+                + (_.$list.width() - _.options.centerScaling * targetSlideOuterWidth ) / 2;
+              _.lastTargetLeft = targetLeft;
             }
         }
 
@@ -1719,7 +1739,8 @@
             _.animating = false;
 
             if (_.slideCount > _.options.slidesToShow) {
-                _.setPosition();
+                /* Comentado para evitar salto de posicion */
+                // _.setPosition();
             }
 
             _.swipeLeft = null;
@@ -2367,9 +2388,37 @@
 
             }
 
-            _.$slides
-                .eq(index)
-                .addClass('slick-center');
+            var centeredSlide = _.$slides
+                .eq(index);
+            if(centeredSlide.get(0)){
+                centeredSlide.addClass('slick-center');
+                centeredSlide.children("img").on("load", function () {
+                  var slides = _.$slides;
+                  if(_.currentSlide === index && slides.size() >= 5 && !_.resized){
+                    var imgWidth = $(this).width();
+                    var imgHeight = $(this).height();
+                    var targetHeight = imgHeight * _.options.centerScaling;
+                    var targetMarginTop = (targetHeight - imgHeight) / 2.0;
+                    var targetWidth = imgWidth * _.options.centerScaling;
+                    console.log("center loaded", $(this));
+                    $(this).css({
+                        width: targetWidth
+                    });
+                    _.resized = true;
+                    setTimeout(function () {
+                      $(".slick-slide").not(".slick-center").each(function () {
+                        var slide = $(this);
+                        slide.css({
+                          transform: "translate(0px, " + targetMarginTop + "px)"
+                        });
+
+                      });
+                      $(".center").slick("slickGoTo", 2);
+                    }, 67);
+
+                  }
+                })
+            }
 
         } else {
 
