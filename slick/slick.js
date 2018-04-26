@@ -2413,7 +2413,7 @@
                         });
 
                       });
-                      $(".center").slick("slickGoTo", 2);
+                      $(".center").slick("slickGoTo", _.options.initialSlide);
                     }, 67);
 
                   }
