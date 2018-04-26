@@ -2394,7 +2394,7 @@
                 centeredSlide.addClass('slick-center');
                 centeredSlide.children("img").on("load", function () {
                   var slides = _.$slides;
-                  if(_.currentSlide === index && slides.size() >= 5 && !_.resized){
+                  if(_.currentSlide === index && slides.length >= 5 && !_.resized){
                     var imgWidth = $(this).width();
                     var imgHeight = $(this).height();
                     var targetHeight = imgHeight * _.options.centerScaling;
