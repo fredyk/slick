@@ -32,6 +32,10 @@
   background-size: 50%;
 }
 .slick-prev:hover,
+.slick-next:hover {
+  background-color: #d4fcfa;
+}
+.slick-prev:hover,
 .slick-next:hover,
 .slick-prev:focus,
 .slick-next:focus {
