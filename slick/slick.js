@@ -229,6 +229,9 @@
             }
         }
 
+        if(!_.$slideTrack)
+            return;
+
         _.$slides = _.$slideTrack.children(this.options.slide);
 
         _.$slideTrack.children(this.options.slide).detach();
@@ -735,7 +738,6 @@
                 if (_.slideCount > _.options.slidesToShow) {
                     _.currentDirection = event.data.message;
                     _.slideHandler(_.currentSlide - slideOffset, false, dontAnimate);
-                    _.lastDirection = event.data.message;
                 }
                 break;
 
@@ -744,7 +746,6 @@
                 if (_.slideCount > _.options.slidesToShow) {
                     _.currentDirection = event.data.message;
                     _.slideHandler(_.currentSlide + slideOffset, false, dontAnimate);
-                    _.lastDirection = event.data.message;
                 }
                 break;
 
@@ -1221,10 +1222,14 @@
                 }
 
               var targetSlideOuterWidth = targetSlide.outerWidth();
+                var scaledSlideOuterWidth = ((targetSlide.hasClass("slick-center")?
+                    targetSlideOuterWidth:
+                    targetSlideOuterWidth * _.options.centerScaling
+                ));
 
-              targetLeft += (_.options.centerScaling * targetSlideOuterWidth - targetSlideOuterWidth)
-                * ((_.currentDirection === "previous")?0:1 )
-                + (_.$list.width() - _.options.centerScaling * targetSlideOuterWidth ) / 2;
+              targetLeft += (scaledSlideOuterWidth - targetSlideOuterWidth)
+                * ((_.currentDirection === "previous")?0:1)
+                + (_.$list.width() - scaledSlideOuterWidth ) / 2;
               _.lastTargetLeft = targetLeft;
             }
         }
@@ -1758,7 +1763,7 @@
 
             if (_.slideCount > _.options.slidesToShow) {
                 /* Comentado para evitar salto de posicion */
-                // _.setPosition();
+                _.setPosition();
             }
 
             _.swipeLeft = null;
@@ -2796,6 +2801,9 @@
 
             if( direction != 'vertical' ) {
 
+                _.currentDirection = (
+                  (direction === "right")?"previous":"next"
+                );
                 _.slideHandler( slideCount );
                 _.touchObject = {};
                 _.$slider.trigger('swipe', [_, direction ]);
@@ -2806,6 +2814,7 @@
 
             if ( _.touchObject.startX !== _.touchObject.curX ) {
 
+                _.currentDirection = ((_.touchObject.curX > _.touchObject.startX)?"previous":"next");
                 _.slideHandler( _.currentSlide );
                 _.touchObject = {};
 
@@ -2991,10 +3000,11 @@
             _.$nextArrow.remove();
         }
 
-        _.$slides
-            .removeClass('slick-slide slick-active slick-visible slick-current')
-            .attr('aria-hidden', 'true')
-            .css('width', '');
+        if(_.$slides)
+          _.$slides
+              .removeClass('slick-slide slick-active slick-visible slick-current')
+              .attr('aria-hidden', 'true')
+              .css('width', '');
 
     };
 
