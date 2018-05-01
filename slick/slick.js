@@ -246,9 +246,9 @@
 
         _.reinit();
 
-        $(markup).children(".slide-image").toggle().on("load", function () {
+        $(markup).find(".slide-image").toggle().find("img").on("load", function () {
           console.log(this);
-          var img = $(this);
+          var img = $(this).closest(".slide-image");
           var slide = img.parent();
           var targetMarginTop = img.height()*(_.options.centerScaling - 1) *0.5;
           if(!slide.hasClass("slick-center")){
@@ -2432,13 +2432,14 @@
                 .eq(index);
             if(centeredSlide.get(0)){
                 centeredSlide.addClass('slick-center');
-                centeredSlide.children("img").on("load", function () {
+                centeredSlide.find("img").on("load", function () {
                   var slides = _.$slides;
                   if(_.currentSlide === index && slides.length >= 5 && !_.resized){
-                    var imgWidth = $(this).width();
+                    var slideImage = $(this).closest(".slide-image");
+                    var imgWidth = slideImage.width();
                     var targetWidth = imgWidth * _.options.centerScaling;
-                    console.log("center loaded", $(this));
-                    $(this).css({
+                    console.log("center loaded", slideImage);
+                    slideImage.css({
                         width: targetWidth
                     });
                     _.resized = true;
