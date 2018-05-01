@@ -473,8 +473,8 @@
 
         if (_.options.arrows === true ) {
 
-            _.$prevArrow = $(_.options.prevArrow).addClass('slick-arrow');
-            _.$nextArrow = $(_.options.nextArrow).addClass('slick-arrow');
+            _.$prevArrow = $(_.options.prevArrow).addClass('slick-arrow').hide();
+            _.$nextArrow = $(_.options.nextArrow).addClass('slick-arrow').hide();
 
             if( _.slideCount > _.options.slidesToShow ) {
 
@@ -494,6 +494,11 @@
                         .addClass('slick-disabled')
                         .attr('aria-disabled', 'true');
                 }
+
+                var arrowWidth = $(".slick-arrow").first().width();
+                $(".slick-arrow").css("width", arrowWidth);
+                $(".slick-arrow").css("height", arrowWidth);
+                $(".slick-arrow").css("border-radius", arrowWidth / 2.0);
 
             } else {
 
@@ -1762,7 +1767,6 @@
             _.animating = false;
 
             if (_.slideCount > _.options.slidesToShow) {
-                /* Comentado para evitar salto de posicion */
                 _.setPosition();
             }
 
@@ -1772,13 +1776,22 @@
                 _.autoPlay();
             }
 
+            var $currentSlide = $(_.$slides.get(_.currentSlide));
             if (_.options.accessibility === true) {
                 _.initADA();
 
                 if (_.options.focusOnChange) {
-                    var $currentSlide = $(_.$slides.get(_.currentSlide));
                     $currentSlide.attr('tabindex', 0).focus();
                 }
+            }
+
+            if($currentSlide && $currentSlide.hasClass("slick-center")){
+              var left = $currentSlide.offset().left - _.$prevArrow.width();
+              _.$prevArrow.css("margin-left", left);
+              _.$nextArrow.css("margin-right", left);
+              _.$prevArrow.show();
+              _.$nextArrow.show();
+
             }
 
         }
@@ -2430,7 +2443,9 @@
                     });
                     _.resized = true;
                     setTimeout(function () {
-                      _.$list.css("margin-top", (_.$slider.height() - _.$list.height()) / 2.0);
+                      var listMarginTop = (_.$slider.height() - _.$list.height()) / 2.0;
+                      if(listMarginTop > 0 && window.innerWidth >= 768)
+                        _.$list.css("margin-top", listMarginTop);
                       $(".center").slick("slickGoTo", _.options.initialSlide);
                       _.$slider.trigger('endLoad', [_]);
 
