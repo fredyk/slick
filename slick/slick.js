@@ -1884,11 +1884,15 @@
 
         currentSlide = _.currentSlide;
 
-        _.destroy(true);
+        if(initializing){
 
-        $.extend(_, _.initials, { currentSlide: currentSlide });
+          _.destroy(true);
 
-        _.init();
+          $.extend(_, _.initials, { currentSlide: currentSlide });
+
+          _.init();
+
+        }
 
         if( !initializing ) {
 
@@ -2413,7 +2417,10 @@
                         });
 
                       });
+                      _.$list.css("margin-top", (_.$slider.height() - _.$list.height()) / 2.0);
                       $(".center").slick("slickGoTo", _.options.initialSlide);
+                      _.$slider.trigger('endLoad', [_]);
+
                     }, 67);
 
                   }
