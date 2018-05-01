@@ -243,6 +243,20 @@
 
         _.reinit();
 
+        $(markup).children(".slide-image").toggle().on("load", function () {
+          console.log(this);
+          var img = $(this);
+          var slide = img.parent();
+          var targetMarginTop = img.height()*(_.options.centerScaling - 1) *0.5;
+          if(!slide.hasClass("slick-center")){
+            slide.css({
+              transform: "translate(0px, " + targetMarginTop + "px)"
+            });
+          }
+          img.toggle();
+
+        });
+
     };
 
     Slick.prototype.animateHeight = function() {
@@ -651,8 +665,8 @@
                                     targetBreakpoint]);
                             if (initial === true) {
                                 _.currentSlide = _.options.initialSlide;
+                                _.refresh(initial);
                             }
-                            _.refresh(initial);
                         }
                         triggerBreakpoint = targetBreakpoint;
                     }
@@ -2400,9 +2414,6 @@
                   var slides = _.$slides;
                   if(_.currentSlide === index && slides.length >= 5 && !_.resized){
                     var imgWidth = $(this).width();
-                    var imgHeight = $(this).height();
-                    var targetHeight = imgHeight * _.options.centerScaling;
-                    var targetMarginTop = (targetHeight - imgHeight) / 2.0;
                     var targetWidth = imgWidth * _.options.centerScaling;
                     console.log("center loaded", $(this));
                     $(this).css({
@@ -2410,13 +2421,6 @@
                     });
                     _.resized = true;
                     setTimeout(function () {
-                      $(".slick-slide").not(".slick-center").each(function () {
-                        var slide = $(this);
-                        slide.css({
-                          transform: "translate(0px, " + targetMarginTop + "px)"
-                        });
-
-                      });
                       _.$list.css("margin-top", (_.$slider.height() - _.$list.height()) / 2.0);
                       $(".center").slick("slickGoTo", _.options.initialSlide);
                       _.$slider.trigger('endLoad', [_]);
