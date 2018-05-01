@@ -337,13 +337,17 @@
                 var centerSlideAnimProps = {};
 
                 var centerSlide = _.$slideTrack.children('.slick-center');
-                lowSlideAnimProps[_.animType] = 'translate(0px, ' + (_.$slideTrack.height() - centerSlide.height()) / 2.0 + 'px)';
+                var slideTrackHeight = _.$slideTrack.height();
+                var centerSlideHeight = centerSlide.height();
                 centerSlideAnimProps[_.animType] = 'translate(0px, 0px)';
 
                 centerSlide.css(centerSlideAnimProps);
-                $(".slick-slide").not(".slick-center").each(function () {
-                  $(this).css(lowSlideAnimProps);
-                });
+                if(centerSlideHeight !== slideTrackHeight){
+                    lowSlideAnimProps[_.animType] = 'translate(0px, ' + (slideTrackHeight - centerSlideHeight) / 2.0 + 'px)';
+                    $(".slick-slide").not(".slick-center").each(function () {
+                      $(this).css(lowSlideAnimProps);
+                    });
+                }
 
                 if (callback) {
                     setTimeout(function() {
