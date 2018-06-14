@@ -2447,7 +2447,7 @@
                       var listMarginTop = (_.$slider.height() - _.$list.height()) / 2.0;
                       if(listMarginTop > 0 && window.innerWidth >= 768)
                         _.$list.css("margin-top", listMarginTop);
-                      $(".center").slick("slickGoTo", _.options.initialSlide);
+                      _.$slider.slick("slickGoTo", _.options.initialSlide);
                       _.$slider.trigger('endLoad', [_]);
 
                     }, 67);
