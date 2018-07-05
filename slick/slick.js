@@ -2436,9 +2436,13 @@
                   var slides = _.$slides;
                   if(_.currentSlide === index && slides.length >= 5 && !_.resized){
                     var slideImage = $(this).closest(".slide-image");
-                    var imgWidth = slideImage.width();
+                    var imgWidth = 0;
+                    while(imgWidth === 0){
+                      imgWidth = slideImage.width();
+                      console.log("imgWidth", imgWidth);
+                    }
                     var targetWidth = imgWidth * _.options.centerScaling;
-                    console.log("center loaded", slideImage);
+                    console.log("center loaded", slideImage, targetWidth);
                     slideImage.css({
                         width: targetWidth
                     });
@@ -2447,10 +2451,10 @@
                       var listMarginTop = (_.$slider.height() - _.$list.height()) / 2.0;
                       if(listMarginTop > 0 && window.innerWidth >= 768)
                         _.$list.css("margin-top", listMarginTop);
-                      _.$slider.slick("slickGoTo", _.options.initialSlide);
+                      _.slickGoTo(_.options.initialSlide);
                       _.$slider.trigger('endLoad', [_]);
 
-                    }, 67);
+                    }, 134);
 
                   }
                 })
